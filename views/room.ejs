@@ -38,17 +38,22 @@
       socket.emit("join room", "<%= roomId %>");
 
       // Listen for chat messages
-      socket.on("chat message", (username, msg, file) => {
+      socket.on("chat message", (username, msg, fileUrl) => {
         const item = document.createElement("li");
         item.textContent = `${username}: ${msg}`;
-        if (file) {
+        if (fileUrl) {
           const fileElement = document.createElement(
-            file.startsWith("data:image/") ? "img" : "video"
+            fileUrl.endsWith(".mp4") ? "video" : "img"
           );
-          fileElement.src = file;
+          fileElement.src = fileUrl;
+          console.log("video is  " + fileUrl);
+          if (fileUrl.endsWith(".mp4")) {
+            fileElement.controls = true; // add controls to the video
+            fileElement.type = "video/mp4"; // specify the MIME type
+          }
           item.appendChild(fileElement);
         }
-        const messages = document.getElementById("messages"); // get the messages element
+        const messages = document.getElementById("messages");
         messages.appendChild(item);
         window.scrollTo(0, document.body.scrollHeight);
       });
@@ -60,16 +65,21 @@
         const fileInput = document.getElementById("fileInput");
         const file = fileInput.files[0];
         if (file) {
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            socket.emit(
-              "chat message",
-              "<%= roomId %>",
-              messageInput.value,
-              reader.result
-            );
-          };
-          reader.readAsDataURL(file);
+          const formData = new FormData();
+          formData.append("file", file);
+          fetch("/upload", {
+            method: "POST",
+            body: formData,
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              socket.emit(
+                "chat message",
+                "<%= roomId %>",
+                messageInput.value,
+                data.fileUrl
+              );
+            });
         } else {
           socket.emit("chat message", "<%= roomId %>", messageInput.value);
         }

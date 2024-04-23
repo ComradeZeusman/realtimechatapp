@@ -3,6 +3,20 @@ const bodyParser = require("body-parser");
 const express = require("express");
 const session = require("express-session");
 const sharedsession = require("express-socket.io-session");
+const multer = require("multer");
+const path = require("path");
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "public/uploads/");
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + path.extname(file.originalname)); //Appending extension
+  },
+});
+
+const upload = multer({ storage: storage });
+
 const app = express();
 const server = app.listen(3000, () => {
   console.log("Server is running on port 3000");
@@ -12,6 +26,7 @@ const io = socket(server);
 app.set("view engine", "ejs");
 
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use("/uploads", express.static("public/uploads"));
 
 let expressSession = session({
   secret: "your secret",
@@ -76,4 +91,8 @@ io.on("connection", (socket) => {
 app.post("/join_room", (req, res) => {
   const roomId = req.body.roomId;
   res.redirect(`/room/${roomId}`); // redirect to the room
+});
+
+app.post("/upload", upload.single("file"), (req, res) => {
+  res.json({ fileUrl: "/uploads/" + req.file.filename });
 });
