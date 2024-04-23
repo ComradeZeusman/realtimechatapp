@@ -103,10 +103,21 @@ io.on("connection", (socket) => {
     io.to(roomId).emit("chat message", socket.username, msg, file);
   });
 });
-
+function roomExists(roomId) {
+  return roomId in rooms;
+}
 app.post("/join_room", (req, res) => {
   const roomId = req.body.roomId;
-  res.redirect(`/room/${roomId}`); // redirect to the room
+
+  if (roomExists(roomId)) {
+    res.redirect(`/room/${roomId}`); // redirect to the room
+  } else {
+    res
+      .status(404)
+      .send(
+        `<script>alert('Room not found!');window.location.href = '/';</script>`
+      );
+  }
 });
 
 app.post("/upload", upload.single("file"), (req, res) => {
