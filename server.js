@@ -75,7 +75,14 @@ io.on("connection", (socket) => {
     if (!roomUsers[roomId]) {
       roomUsers[roomId] = 0;
     }
-    roomUsers[roomId]++;
+
+    // Only increase the user count if the user has not joined the room before
+    if (!socket.handshake.session.hasJoinedRoom) {
+      roomUsers[roomId]++;
+      socket.handshake.session.hasJoinedRoom = true; // set the flag
+      socket.handshake.session.save(); // save the session
+    }
+
     io.to(roomId).emit("user connected", socket.username);
     io.to(roomId).emit("user count", roomUsers[roomId]);
 
@@ -102,7 +109,9 @@ io.on("connection", (socket) => {
   });
 
   socket.on("chat message", (roomId, msg, file) => {
-    msg = filter.clean(msg);
+    if (typeof msg === "string" && msg.trim() !== "") {
+      msg = filter.clean(msg);
+    }
     io.to(roomId).emit("chat message", socket.username, msg, file);
   });
 });
