@@ -68,8 +68,8 @@ io.on("connection", (socket) => {
     console.log(`User ${socket.username} disconnected`);
   });
 
-  socket.on("chat message", (roomId, msg) => {
-    io.to(roomId).emit("chat message", socket.username, msg); // send the message to the room
+  socket.on("chat message", (roomId, msg, file) => {
+    io.to(roomId).emit("chat message", socket.username, msg, file);
   });
 });
 

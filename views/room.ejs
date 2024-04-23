@@ -14,7 +14,9 @@
     <h1>Room: <%= roomId %></h1>
     <div id="messages"></div>
     <form id="messageForm">
-      <input id="messageInput" autocomplete="off" /><button>Send</button>
+      <input id="messageInput" autocomplete="off" />
+      <input type="file" id="fileInput" />
+      <button>Send</button>
     </form>
     <button
       id="endRoomButton"
@@ -36,19 +38,43 @@
       socket.emit("join room", "<%= roomId %>");
 
       // Listen for chat messages
-      socket.on("chat message", (username, msg) => {
+      socket.on("chat message", (username, msg, file) => {
         const item = document.createElement("li");
         item.textContent = `${username}: ${msg}`;
+        if (file) {
+          const fileElement = document.createElement(
+            file.startsWith("data:image/") ? "img" : "video"
+          );
+          fileElement.src = file;
+          item.appendChild(fileElement);
+        }
         const messages = document.getElementById("messages"); // get the messages element
         messages.appendChild(item);
         window.scrollTo(0, document.body.scrollHeight);
       });
+
       // Send a chat message
       document.getElementById("messageForm").addEventListener("submit", (e) => {
         e.preventDefault();
         const messageInput = document.getElementById("messageInput");
-        socket.emit("chat message", "<%= roomId %>", messageInput.value);
+        const fileInput = document.getElementById("fileInput");
+        const file = fileInput.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            socket.emit(
+              "chat message",
+              "<%= roomId %>",
+              messageInput.value,
+              reader.result
+            );
+          };
+          reader.readAsDataURL(file);
+        } else {
+          socket.emit("chat message", "<%= roomId %>", messageInput.value);
+        }
         messageInput.value = "";
+        fileInput.value = "";
       });
 
       socket.on("admin", (isAdmin) => {
