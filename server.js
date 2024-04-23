@@ -4,6 +4,8 @@ const express = require("express");
 const session = require("express-session");
 const sharedsession = require("express-socket.io-session");
 const multer = require("multer");
+const Filter = require("bad-words");
+const filter = new Filter();
 const path = require("path");
 
 const storage = multer.diskStorage({
@@ -100,6 +102,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("chat message", (roomId, msg, file) => {
+    msg = filter.clean(msg);
     io.to(roomId).emit("chat message", socket.username, msg, file);
   });
 });
