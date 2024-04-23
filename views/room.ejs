@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Chat Room</title>
+    <style>
+      #messages {
+        height: 300px;
+        border: 1px solid #ccc;
+        overflow: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Room: <%= roomId %></h1>
+    <div id="messages"></div>
+    <form id="messageForm">
+      <input id="messageInput" autocomplete="off" /><button>Send</button>
+    </form>
+    <button id="endRoomButton" style="display: none">End Room</button>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const socket = io();
+
+      // Join the room
+      socket.emit("join room", "<%= roomId %>");
+
+      // Listen for chat messages
+      socket.on("chat message", (username, msg) => {
+        const item = document.createElement("li");
+        item.textContent = `${username}: ${msg}`;
+        const messages = document.getElementById("messages"); // get the messages element
+        messages.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
+      });
+      // Send a chat message
+      document.getElementById("messageForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const messageInput = document.getElementById("messageInput");
+        socket.emit("chat message", "<%= roomId %>", messageInput.value);
+        messageInput.value = "";
+      });
+
+      socket.on("admin", (isAdmin) => {
+        const endRoomButton = document.getElementById("endRoomButton");
+        if (isAdmin) {
+          endRoomButton.style.display = "block"; // show the "End Room" button
+        } else {
+          endRoomButton.style.display = "none"; // hide the "End Room" button
+        }
+      });
+
+      document.getElementById("endRoomButton").addEventListener("click", () => {
+        socket.emit("end room", "<%= roomId %>"); // emit an "end room" event
+      });
+
+      socket.on("room ended", () => {
+        // handle the room being ended
+      });
+    </script>
+  </body>
+</html>

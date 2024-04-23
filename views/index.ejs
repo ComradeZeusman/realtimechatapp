@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Chat App</title>
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        font-family: Arial, sans-serif;
+      }
+      form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      input {
+        margin: 10px 0;
+        padding: 10px;
+        font-size: 1em;
+      }
+      button {
+        padding: 10px 20px;
+        font-size: 1em;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <form action="/create_room" method="POST">
+      <button type="submit">Create room</button>
+    </form>
+    <br />
+    <form action="/join_room" method="POST">
+      <input type="text" name="roomId" placeholder="Enter room ID" required />
+      <button type="submit">Join room</button>
+    </form>
+  </body>
+</html>
