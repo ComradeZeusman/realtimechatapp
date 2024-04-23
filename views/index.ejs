@@ -1,40 +1,129 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Chat App</title>
+    <title>ChatVerse - Connect and Converse</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <style>
       body {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        font-family: Arial, sans-serif;
+        font-family: "Poppins", sans-serif;
+        overflow: hidden;
       }
-      form {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+
+      .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: -1;
       }
-      input {
-        margin: 10px 0;
-        padding: 10px;
-        font-size: 1em;
+
+      .form-container {
+        animation: slide-up 1s ease;
       }
-      button {
-        padding: 10px 20px;
-        font-size: 1em;
-        cursor: pointer;
+
+      @keyframes slide-up {
+        0% {
+          transform: translateY(100%);
+          opacity: 0;
+        }
+        100% {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .form-container {
+          width: 100%;
+          height: 100%;
+          max-width: none;
+          border-radius: 0;
+          position: absolute;
+          top: 0;
+          left: 0;
+          padding: 1rem;
+          box-sizing: border-box;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+        }
+
+        .form-container > * {
+          max-width: 100%;
+          box-sizing: border-box;
+        }
+
+        #joinButton {
+          display: block;
+          margin: 1rem auto 0;
+        }
+        .form-container form.flex {
+          flex-direction: column;
+        }
+
+        .form-container form.flex input,
+        .form-container form.flex button {
+          flex: 1 0 auto;
+          width: 100%;
+        }
+
+        /* Reduce the font size of the heading and paragraph text */
+        .form-container h1 {
+          font-size: 2rem;
+        }
+
+        .form-container p {
+          font-size: 1rem;
+        }
       }
     </style>
   </head>
-  <body>
-    <form action="/create_room" method="POST">
-      <button type="submit">Create room</button>
-    </form>
-    <br />
-    <form action="/join_room" method="POST">
-      <input type="text" name="roomId" placeholder="Enter room ID" required />
-      <button type="submit">Join room</button>
-    </form>
+  <body class="flex items-center justify-center min-h-screen">
+    <div class="overlay"></div>
+    <div
+      class="form-container max-w-md w-full p-6 bg-white rounded-lg shadow-md"
+    >
+      <h1 class="text-3xl font-bold mb-6 text-center">Welcome to ChatVerse</h1>
+      <p class="text-gray-600 mb-8 text-center">
+        Connect with people from around the world and engage in lively
+        conversations.
+      </p>
+      <form action="/create_room" method="POST" class="mb-4">
+        <button
+          type="submit"
+          class="w-full py-3 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition duration-200"
+        >
+          Create Room
+        </button>
+      </form>
+      <form action="/join_room" method="POST" class="flex">
+        <input
+          type="text"
+          name="roomId"
+          placeholder="Enter room ID"
+          required
+          class="flex-1 py-3 px-4 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <button
+          type="submit"
+          class="py-3 px-4 bg-gray-500 text-white font-semibold rounded-r-lg hover:bg-gray-600 transition duration-200"
+        >
+          Join Room
+        </button>
+      </form>
+    </div>
   </body>
 </html>
