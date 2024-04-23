@@ -96,6 +96,32 @@
         }
       });
 
+      socket.on("user connected", (username) => {
+        const item = document.createElement("li");
+        item.textContent = `${username} has joined the room`;
+        const messages = document.getElementById("messages");
+        messages.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
+      });
+
+      // Listen for user disconnected
+      socket.on("user disconnected", (username) => {
+        const item = document.createElement("li");
+        item.textContent = `${username} has left the room`;
+        const messages = document.getElementById("messages");
+        messages.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
+      });
+
+      // Listen for user count
+      socket.on("user count", (count) => {
+        const item = document.createElement("li");
+        item.textContent = `There are now ${count} users in the room`;
+        const messages = document.getElementById("messages");
+        messages.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
+      });
+
       document.getElementById("endRoomButton").addEventListener("click", () => {
         socket.emit("end room", "<%= roomId %>"); // emit an "end room" event
       });

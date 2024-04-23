@@ -48,6 +48,7 @@ app.get("/", (req, res) => {
 });
 
 const rooms = {};
+const roomUsers = {};
 
 app.post("/create_room", (req, res) => {
   const roomId = Math.random().toString(36).substring(7);
@@ -68,6 +69,14 @@ io.on("connection", (socket) => {
     socket.join(roomId); // join the user to the room
     socket.username = chatId; // assign the chatId as a username
     socket.emit("admin", rooms[roomId] === chatId); // emit an "admin" event
+
+    if (!roomUsers[roomId]) {
+      roomUsers[roomId] = 0;
+    }
+    roomUsers[roomId]++;
+    io.to(roomId).emit("user connected", socket.username);
+    io.to(roomId).emit("user count", roomUsers[roomId]);
+
     console.log(`User ${chatId} connected to room ${roomId}`);
   });
 
@@ -80,6 +89,13 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
+    Object.keys(roomUsers).forEach((roomId) => {
+      if (io.sockets.adapter.rooms[roomId]) {
+        roomUsers[roomId]--;
+        io.to(roomId).emit("user disconnected", socket.username);
+        io.to(roomId).emit("user count", roomUsers[roomId]);
+      }
+    });
     console.log(`User ${socket.username} disconnected`);
   });
 
