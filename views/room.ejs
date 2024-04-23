@@ -16,7 +16,17 @@
     <form id="messageForm">
       <input id="messageInput" autocomplete="off" /><button>Send</button>
     </form>
-    <button id="endRoomButton" style="display: none">End Room</button>
+    <button
+      id="endRoomButton"
+      style="
+        display: none;
+        background-color: #4caf50;
+        color: white;
+        margin-top: 20px;
+      "
+    >
+      End Room
+    </button>
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
@@ -55,7 +65,8 @@
       });
 
       socket.on("room ended", () => {
-        // handle the room being ended
+        alert("Room has been ended by the admin");
+        window.location.href = "/"; // redirect to the home page
       });
     </script>
   </body>
