@@ -105,6 +105,17 @@ io.on("connection", (socket) => {
         io.to(roomId).emit("user count", roomUsers[roomId]);
       }
     });
+
+    socket.on("end room", (roomId) => {
+      // Check if the user is the admin
+      if (socket.id === rooms[roomId].admin) {
+        // Delete the room
+        delete rooms[roomId];
+
+        // Notify all users in the room that it has been ended
+        io.to(roomId).emit("room ended");
+      }
+    });
     console.log(`User ${socket.username} disconnected`);
   });
 
