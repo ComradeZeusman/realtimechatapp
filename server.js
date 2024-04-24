@@ -72,6 +72,9 @@ io.on("connection", (socket) => {
     socket.username = chatId; // assign the chatId as a username
     socket.emit("admin", rooms[roomId] === chatId); // emit an "admin" event
 
+    //console.log admin
+    console.log(rooms[roomId] === chatId);
+
     if (!roomUsers[roomId]) {
       roomUsers[roomId] = 0;
     }
@@ -104,6 +107,16 @@ io.on("connection", (socket) => {
         io.to(roomId).emit("user disconnected", socket.username);
         io.to(roomId).emit("user count", roomUsers[roomId]);
       }
+    });
+
+    socket.on("typing", () => {
+      console.log("Received typing event from:", socket.username);
+      socket.broadcast.emit("typing", { username: socket.username });
+    });
+
+    socket.on("stopTyping", () => {
+      console.log("Received stopTyping event from:", socket.username);
+      socket.broadcast.emit("stopTyping", { username: socket.username });
     });
 
     socket.on("end room", (roomId) => {

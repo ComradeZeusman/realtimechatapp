@@ -268,7 +268,12 @@
   </head>
   <body>
     <h1 class="text-3xl font-bold mb-4">Room: <%= roomId %></h1>
-    <div id="messages"></div>
+    <div id="messages">
+      <div id="typingIndicator" class="hidden">
+        <span class="user-avatar">...</span>
+        <span>Someone is typing...</span>
+      </div>
+    </div>
     <form id="messageForm">
       <input
         id="messageInput"
